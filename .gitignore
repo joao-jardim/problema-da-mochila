@@ -1,0 +1,16 @@
+# C++ Build
+obj/
+solver
+
+# Input/Output Data
+input/
+output/
+test_input.txt
+results.csv
+
+# Python
+__pycache__/
+*.pyc
+
+# System
+.DS_Store
