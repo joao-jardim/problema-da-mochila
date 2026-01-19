@@ -17,36 +17,38 @@ Implementação e análise comparativa de três abordagens para o problema da Mo
 
 ## Compilação
 
-Para compilar o código C++, utilize o `make`:
+O projeto foi dividido em executáveis independentes. Você pode compilar todos ou apenas o desejado:
 
-```bash
-make
-```
+-   **Todos**:
+    ```bash
+    make
+    ```
+-   **Apenas Backtracking**:
+    ```bash
+    make bt
+    ```
+-   **Apenas Branch and Bound**:
+    ```bash
+    make bb
+    ```
+-   **Apenas Programação Dinâmica**:
+    ```bash
+    make dp
+    ```
 
-Isso gerará o executável `./solver`.
+Executáveis gerados: `solver_bt`, `solver_bb`, `solver_dp`.
 
 ## Execução Manual
 
-O programa aceita como entrada um arquivo de texto e a estratégia desejada:
+Execute o binário correspondente à estratégia desejada passando o arquivo de entrada:
 
 ```bash
-./solver <ESTRATEGIA> <ARQUIVO_ENTRADA>
-```
-
-- **ESTRATEGIA**: `BT`, `BB`, ou `DP`
-- **ARQUIVO_ENTRADA**: Caminho para o arquivo contendo a instância.
-
-**Formato da Entrada**:
-```text
-W V
-w1 l1 v1
-w2 l2 v2
-...
+./solver_dp <ARQUIVO_ENTRADA>
 ```
 
 **Exemplo**:
 ```bash
-./solver DP test_input.txt
+./solver_dp test_input.txt
 ```
 
 ## Benchmarks e Análise Estatística

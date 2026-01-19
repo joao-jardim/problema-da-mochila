@@ -1,6 +1,9 @@
 # C++ Build
 obj/
 solver
+solver_bt
+solver_bb
+solver_dp
 
 # Input/Output Data
 input/

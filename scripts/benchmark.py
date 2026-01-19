@@ -29,14 +29,21 @@ TARGET_NS = [4, 8, 12, 16, 20, 24] # Conservative start for exponential algos
 
 def run_solver(strategy, input_file):
     try:
-        # Capture stdout to parse execution time and value if needed from C++ output
-        # or rely on the tool to measure time.
-        # The C++ tool prints "Max Value: ..." and "Time: ..."
+        # Select executable based on strategy
+        if strategy == "BT":
+            executable = "./solver_bt"
+        elif strategy == "BB":
+            executable = "./solver_bb"
+        elif strategy == "DP":
+            executable = "./solver_dp"
+        else:
+            return None, None
+
         result = subprocess.run(
-            [SOLVER_PATH, strategy, input_file], 
+            [executable, input_file], 
             capture_output=True, 
             text=True, 
-            timeout=60 # 1 minute timeout per instance
+            timeout=60
         )
         output = result.stdout.splitlines()
         max_value = float(output[0].split(": ")[1])
