@@ -1,8 +1,12 @@
-#include "algorithms.h"
+#include "dynamic_programming_solver.h"
 #include <chrono>
 #include <vector>
 
-Solution KnapsackSolver::solveDynamicProgramming() {
+DynamicProgrammingSolver::DynamicProgrammingSolver(
+    int W, int V, const std::vector<Item> &items)
+    : KnapsackSolver(W, V, items) {}
+
+Solution DynamicProgrammingSolver::solve() {
   Solution sol;
   sol.maxValue = 0;
 

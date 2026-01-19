@@ -1,10 +1,14 @@
-#include "algorithms.h"
+#include "backtracking_solver.h"
 #include <chrono>
 
-void KnapsackSolver::backtracking(int idx, int currentW, int currentV,
-                                  int currentValue,
-                                  std::vector<int> &currentSelection,
-                                  Solution &bestSol) {
+BacktrackingSolver::BacktrackingSolver(int W, int V,
+                                       const std::vector<Item> &items)
+    : KnapsackSolver(W, V, items) {}
+
+void BacktrackingSolver::backtracking(int idx, int currentW, int currentV,
+                                      int currentValue,
+                                      std::vector<int> &currentSelection,
+                                      Solution &bestSol) {
   // Pruning
   if (currentW > W_limit || currentV > V_limit) {
     return;
@@ -36,7 +40,7 @@ void KnapsackSolver::backtracking(int idx, int currentW, int currentV,
                bestSol);
 }
 
-Solution KnapsackSolver::solveBacktracking() {
+Solution BacktrackingSolver::solve() {
   Solution sol;
   sol.maxValue = 0;
   sol.selectedItems.resize(n, 0);

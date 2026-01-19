@@ -9,9 +9,12 @@ TARGET_DP = solver_dp
 SRC_DIR = src
 OBJ_DIR = obj
 
+# Targets
+all: bt bb dp
+
 # Common objects
-COMMON_SRCS = $(SRC_DIR)/common.cpp
-COMMON_OBJS = $(OBJ_DIR)/common.o
+COMMON_SRCS = $(SRC_DIR)/solver.cpp
+COMMON_OBJS = $(OBJ_DIR)/solver.o
 
 # Helper to compile object
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
@@ -20,15 +23,13 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-# Targets
-all: bt bb dp
-
 # Backtracking
 bt: $(TARGET_BT)
 $(TARGET_BT): $(COMMON_OBJS) $(OBJ_DIR)/backtracking.o $(SRC_DIR)/main.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -DRUN_BT $(SRC_DIR)/main.cpp $(COMMON_OBJS) $(OBJ_DIR)/backtracking.o -o $(TARGET_BT)
 
 # Branch and Bound
+# Note: BranchAndBound uses same base class
 bb: $(TARGET_BB)
 $(TARGET_BB): $(COMMON_OBJS) $(OBJ_DIR)/branch_and_bound.o $(SRC_DIR)/main.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -DRUN_BB $(SRC_DIR)/main.cpp $(COMMON_OBJS) $(OBJ_DIR)/branch_and_bound.o -o $(TARGET_BB)
@@ -39,6 +40,6 @@ $(TARGET_DP): $(COMMON_OBJS) $(OBJ_DIR)/dynamic_programming.o $(SRC_DIR)/main.cp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -DRUN_DP $(SRC_DIR)/main.cpp $(COMMON_OBJS) $(OBJ_DIR)/dynamic_programming.o -o $(TARGET_DP)
 
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET_BT) $(TARGET_BB) $(TARGET_DP) solver
+	rm -rf $(OBJ_DIR) $(TARGET_BT) $(TARGET_BB) $(TARGET_DP)
 
 rebuild: clean all

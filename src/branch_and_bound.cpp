@@ -1,8 +1,12 @@
-#include "algorithms.h"
+#include "branch_and_bound_solver.h"
 #include <chrono>
 #include <queue>
 
-float KnapsackSolver::calculateBound(Node u) {
+BranchAndBoundSolver::BranchAndBoundSolver(int W, int V,
+                                           const std::vector<Item> &items)
+    : KnapsackSolver(W, V, items) {}
+
+float BranchAndBoundSolver::calculateBound(Node u) {
   if (u.weight >= W_limit || u.volume >= V_limit)
     return 0;
 
@@ -15,7 +19,7 @@ float KnapsackSolver::calculateBound(Node u) {
   return profit_bound;
 }
 
-Solution KnapsackSolver::solveBranchAndBound() {
+Solution BranchAndBoundSolver::solve() {
   Solution sol;
   sol.maxValue = 0;
   sol.selectedItems.assign(n, 0);

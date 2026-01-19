@@ -1,8 +1,19 @@
-#include "algorithms.h"
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
+
+#include "solver.h"
+#ifdef RUN_BT
+#include "backtracking_solver.h"
+#endif
+#ifdef RUN_BB
+#include "branch_and_bound_solver.h"
+#endif
+#ifdef RUN_DP
+#include "dynamic_programming_solver.h"
+#endif
 
 void printUsage(const char *progName) {
   std::cout << "Usage: " << progName << " <input_file>" << std::endl;
@@ -36,19 +47,20 @@ int main(int argc, char *argv[]) {
   }
   infile.close();
 
-  KnapsackSolver solver(W, V, items);
-  Solution sol;
+  std::unique_ptr<KnapsackSolver> solver;
 
 #ifdef RUN_BT
-  sol = solver.solveBacktracking();
+  solver = std::make_unique<BacktrackingSolver>(W, V, items);
 #elif defined(RUN_BB)
-  sol = solver.solveBranchAndBound();
+  solver = std::make_unique<BranchAndBoundSolver>(W, V, items);
 #elif defined(RUN_DP)
-  sol = solver.solveDynamicProgramming();
+  solver = std::make_unique<DynamicProgrammingSolver>(W, V, items);
 #else
   std::cerr << "No strategy defined during compilation!" << std::endl;
   return 1;
 #endif
+
+  Solution sol = solver->solve();
 
   std::cout << "Max Value: " << sol.maxValue << std::endl;
   std::cout << "Time: " << sol.executionTime << "s" << std::endl;
