@@ -1,0 +1,25 @@
+//Tabela de memoização
+// W = Peso, N = Item
+Tabela K[0..W, O..n]
+function Knapsack(W, n):
+    //abordagem bottom-up
+    for w = 0..W: 
+        K[w,0] = 0
+    for j=1..n:
+        K[0,j] = 0 
+    for j=1..n:
+        for w=1..W:
+            if wj > w:
+                K[w,j] = K[w,j-1]
+            else:
+                K[w,j] = max(K[w,j-1], K[w-wj,j-1]+vj)
+    return K[W,n]
+
+
+function solucao(w, j):
+    if w == 0 or j == 0:
+        return ""
+    if K[w, j-1] == K[w, j]:
+        return solucao(w, j-1)
+    else:
+        return solucao(w-wj, j-1) + "" +vj

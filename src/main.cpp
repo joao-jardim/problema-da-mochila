@@ -26,20 +26,23 @@ int main(int argc, char *argv[]) {
   }
 
   std::string inputFile = argv[1];
-
   std::ifstream infile(inputFile);
+
   if (!infile.is_open()) {
     std::cerr << "Error opening file: " << inputFile << std::endl;
     return 1;
   }
 
+  //W = Quilos, V = Litros
   int W, V;
+
   if (!(infile >> W >> V)) {
     std::cerr << "Error reading W and V" << std::endl;
     return 1;
   }
 
   std::vector<Item> items;
+
   int w, l, v_val;
   int id = 0;
   while (infile >> w >> l >> v_val) {
@@ -47,8 +50,13 @@ int main(int argc, char *argv[]) {
   }
   infile.close();
 
+  //unique_ptr destrói o objeto (solver) assim que sai do escopo (nao precisa de delete)
   std::unique_ptr<KnapsackSolver> solver;
 
+
+//Aqui vamos instanciar o solver que vai ser usado, e chamar o construtor com as entradas
+//que coletamos do arquivo.
+//Solver é um ponteiro que aponta para a classe base, e é instanciado com a classe derivada.
 #ifdef RUN_BT
   solver = std::make_unique<BacktrackingSolver>(W, V, items);
 #elif defined(RUN_BB)
@@ -60,6 +68,7 @@ int main(int argc, char *argv[]) {
   return 1;
 #endif
 
+  //solve é um método da classe derivada
   Solution sol = solver->solve();
 
   std::cout << "Max Value: " << sol.maxValue << std::endl;
