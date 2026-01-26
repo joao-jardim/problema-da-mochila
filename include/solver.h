@@ -24,6 +24,10 @@ public:
 
   virtual Solution solve() = 0;
 
+  const std::vector<Item>& getItems() const {
+    return items;
+  }
+
 protected:
   int W_limit;
   int V_limit;

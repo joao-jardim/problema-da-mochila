@@ -6,21 +6,28 @@
 
 class BranchAndBoundSolver : public KnapsackSolver {
 public:
-  // Helper struct for B&B nodes
-  struct Node {
-    int level;
-    int profit;
-    int weight;
-    int volume;
-    float bound;
-    std::vector<int> selection;
-  };
-
-  BranchAndBoundSolver(int W, int V, const std::vector<Item> &items);
-  Solution solve() override;
+    BranchAndBoundSolver(int W, int V, const std::vector<Item> &items);
+    Solution solve() override;
 
 private:
-  float calculateBound(Node u);
+    struct BBNode {
+        int level;
+        int profit;
+        int weight;
+        int volume;
+        float bound;
+        std::vector<int> selection;
+    };
+
+    struct CompareBound {
+        bool operator()(const BBNode &a, const BBNode &b) const {
+            return a.bound < b.bound; // max-heap
+        }
+    };
+
+    float calculateBound(const BBNode &u) const;
 };
 
 #endif
+
+

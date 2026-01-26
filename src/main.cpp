@@ -79,11 +79,12 @@ int main(int argc, char *argv[]) {
     if (sol.selectedItems[i]) {
       if (!first)
         std::cout << " ";
-      std::cout << i; // Printing 0-based index
+      std::cout << solver->getItems()[i].id;
       first = false;
     }
   }
   std::cout << std::endl;
+
 
   return 0;
 }
