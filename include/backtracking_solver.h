@@ -9,8 +9,10 @@ public:
   Solution solve() override;
 
 private:
-  void backtracking(int idx, int currentW, int currentV, int currentValue,
-                    std::vector<int> &currentSelection, Solution &bestSol);
+  void backtrack(std::vector<int> &a, int k, Solution &bestSol);
+  bool is_a_solution(int k);
+  void process_solution(const std::vector<int> &a, int k, Solution &bestSol);
+  void construct_candidates(const std::vector<int> &a, int k, int c[], int *ncandidates);
 };
 
 #endif
