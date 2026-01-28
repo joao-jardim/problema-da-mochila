@@ -7,13 +7,13 @@ solver_dp
 
 # Input/Output Data
 input/
-output/
-test_input.txt
-results.csv
+# output/
+# test_input.txt
+# results.csv
 
 # Python
 __pycache__/
 *.pyc
-
+*.venv
 # System
 .DS_Store

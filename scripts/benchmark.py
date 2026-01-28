@@ -61,8 +61,8 @@ def main():
     
     results = []
     
-    # 10 instances for each configuration
-    NUM_INSTANCES = 10
+    # 30 instances for better statistical consistency (Central Limit Theorem)
+    NUM_INSTANCES = 30
     
     print("Generating instances and running benchmarks...")
     
