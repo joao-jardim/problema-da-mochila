@@ -37,23 +37,42 @@ def run_solver(strategy, input_file):
         elif strategy == "DP":
             executable = "./solver_dp"
         else:
-            return None, None
+            return None, None, None
 
+        # Use /usr/bin/time -v to measure memory
+        # Output is directed to stderr, so we capture that.
+        cmd = ["/usr/bin/time", "-v", executable, input_file]
+        
         result = subprocess.run(
-            [executable, input_file], 
+            cmd, 
             capture_output=True, 
             text=True, 
             timeout=60
         )
+        
+        # Parse stdout for logic output (Max Value)
         output = result.stdout.splitlines()
         max_value = float(output[0].split(": ")[1])
+        # We can still use internal time, or use time command's time. 
+        # Using internal time from stdout as before for consistency.
         exec_time = float(output[1].split(": ")[1].replace("s", ""))
-        return max_value, exec_time
+
+        # Parse stderr for memory (Maximum resident set size)
+        stderr_output = result.stderr.splitlines()
+        memory_kb = 0
+        for line in stderr_output:
+            if "Maximum resident set size" in line:
+                # Format: "Maximum resident set size (kbytes): 1234"
+                memory_kb = float(line.split(": ")[1].strip())
+                break
+
+        return max_value, exec_time, memory_kb
+
     except subprocess.TimeoutExpired:
-        return None, None
+        return None, None, None
     except Exception as e:
         print(f"Error running {strategy} on {input_file}: {e}")
-        return None, None
+        return None, None, None
 
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -61,7 +80,7 @@ def main():
     
     results = []
     
-    # 30 instances for better statistical consistency (Central Limit Theorem)
+    # 30 instances for better statistical consistency 
     NUM_INSTANCES = 30
     
     print("Generating instances and running benchmarks...")
@@ -85,7 +104,7 @@ def main():
                 if n > 25 and strategy == "BT": 
                     continue
                     
-                val, t = run_solver(strategy, input_path)
+                val, t, mem = run_solver(strategy, input_path)
                 
                 if val is not None:
                     results.append({
@@ -95,7 +114,8 @@ def main():
                         "instance": i,
                         "strategy": strategy,
                         "max_value": val,
-                        "time": t
+                        "time": t,
+                        "memory_kb": mem
                     })
     
     # Save results
@@ -103,7 +123,7 @@ def main():
     df.to_csv(RESULTS_FILE, index=False)
     print(f"Results saved to {RESULTS_FILE}")
     
-    # Plotting
+    # Plotting Time
     if not df.empty:
         plt.figure(figsize=(10, 6))
         sns.lineplot(data=df, x="n", y="time", hue="strategy", style="strategy", markers=True)
@@ -115,6 +135,16 @@ def main():
         plt.savefig(os.path.join(OUTPUT_DIR, "time_comparison.png"))
         print("Plot saved to output/time_comparison.png")
 
+        # Plotting Memory
+        plt.figure(figsize=(10, 6))
+        sns.lineplot(data=df, x="n", y="memory_kb", hue="strategy", style="strategy", markers=True)
+        plt.title("Memory Usage vs Number of Items")
+        plt.xlabel("Number of Items (N)")
+        plt.ylabel("Memory (KB)")
+        plt.grid(True)
+        plt.savefig(os.path.join(OUTPUT_DIR, "memory_comparison.png"))
+        print("Plot saved to output/memory_comparison.png")
+
         # Statistical Analysis
         print("\n--- Statistical Analysis ---")
         try:
@@ -125,22 +155,21 @@ def main():
             for n_val in unique_ns:
                 print(f"\nAnalyzing for N={n_val}:")
                 subset = df[df['n'] == n_val]
-                pivot = subset.pivot(index='instance', columns='strategy', values='time')
                 
-                # Check if we have all strategies
-                if pivot.shape[1] == 3:
-                    stat, p = stats.friedmanchisquare(pivot['BT'], pivot['BB'], pivot['DP'])
-                    print(f"Friedman Test: statistic={stat:.4f}, p-value={p:.4e}")
-                    if p < 0.05:
-                        print("Result: Significant difference found.")
-                    else:
-                        print("Result: No significant difference found (Statistical Tie).")
-                else:
-                    print("Skipping statistical test (not all algorithms ran).")
-                    
+                # Check time differences
+                pivot_time = subset.pivot(index='instance', columns='strategy', values='time')
+                if pivot_time.shape[1] == 3:
+                    stat, p = stats.friedmanchisquare(pivot_time['BT'], pivot_time['BB'], pivot_time['DP'])
+                    print(f"Time Friedman Test: p-value={p:.4e}")
+                
+                # Check memory differences (optional, usually obvious)
+                pivot_mem = subset.pivot(index='instance', columns='strategy', values='memory_kb')
+                if pivot_mem.shape[1] == 3:
+                     stat, p = stats.friedmanchisquare(pivot_mem['BT'], pivot_mem['BB'], pivot_mem['DP'])
+                     print(f"Memory Friedman Test: p-value={p:.4e}")
+
         except ImportError:
             print("scipy not installed. Skipping statistical tests.")
-
 
 if __name__ == "__main__":
     main()
